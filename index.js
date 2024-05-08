@@ -1,8 +1,9 @@
 require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
-const fs = require('fs');
 const OAI = require('openai');
 const OpenAI = OAI.OpenAI;
+
+const maxMessages = 4;
 
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
 
@@ -37,7 +38,7 @@ async function translateReply(msg){
 
     var current = msg;
 
-    while(current){
+    while(current && messages.length < maxMessages){
         if(current.text){
             const isUser = current.from.id === msg.from.id;
             messages.splice(1, 0, {
