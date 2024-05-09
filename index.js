@@ -2,6 +2,8 @@ require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 const OAI = require('openai');
 const OpenAI = OAI.OpenAI;
+const DetectLanguage = require('detectlanguage');
+const detectLanguage = new DetectLanguage(process.env.DETECTLANGUAGE_API_KEY);
 
 const maxMessages = 4;
 
@@ -25,14 +27,26 @@ bot.on('message', (msg) => {
 
 });
 
-console.log("Starting");
+async function isChinese(text){
+
+    const result = await detectLanguage.detect(text);
+
+    return result[0].language === "zh" || result[0].language === "zh-Hant";
+
+}
+
+const chinesePrompt = "Traduza os textos de entrada do usuário para chinês, baseado no contexto anterior. Você está respondendo clientes da sua loja de câmera de segurança. Seja formal. Sua resposta deve conter apenas o texto traduzido.";
+
+const portuguesePrompt = "基于之前的内容，把用户输入的文本翻译成中文";
 
 async function translateReply(msg){
+
+    const isChineseText = await isChinese(msg.text);
     
     var messages = [
         {
             role: "system",
-            content: "判断用户输入的文本是否是中文还是葡萄牙语，并翻译成对应的语言。你的回复应只包括翻译后的文本。"
+            content: isChineseText ? chinesePrompt : portuguesePrompt
         }
     ]
 
