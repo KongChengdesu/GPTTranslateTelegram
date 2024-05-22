@@ -31,7 +31,7 @@ async function isChinese(text){
 
 }
 
-const chinesePrompt = "Traduza os textos de entrada do usuário para português, baseado no contexto anterior. Você está respondendo clientes da sua loja de câmera de segurança. Seja formal. Sua resposta deve conter apenas o texto traduzido.";
+const chinesePrompt = "Traduza os textos de entrada do usuário para português, baseado no contexto anterior. Sua resposta deve conter apenas o texto traduzido.";
 
 const portuguesePrompt = "基于之前的内容，把用户输入的文本翻译成中文";
 
