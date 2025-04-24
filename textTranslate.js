@@ -1,12 +1,12 @@
-import { openai } from "./openai.js";
-
 const chinesePrompt = "Traduza os textos de entrada do usuário para português, baseado no contexto anterior. Sua resposta deve conter apenas o texto traduzido.";
-
 const portuguesePrompt = "基于之前的内容，把用户输入的文本翻译成中文";
 
 const maxMessages = 4;
 
-export async function translateReply(msg){
+const { openai } = require("./openai.js");
+const { isChinese } = require("./utils.js");
+
+async function translateReply(msg){
 
     const isChineseText = await isChinese(msg.text);
     
@@ -32,7 +32,7 @@ export async function translateReply(msg){
     }
     
     const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: "gpt-4.1-nano",
         messages: messages,
     });
 
@@ -41,3 +41,7 @@ export async function translateReply(msg){
     return reply;
 
 }
+
+module.exports = {
+    translateReply
+};
