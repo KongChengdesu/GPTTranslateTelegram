@@ -1,23 +1,28 @@
+import { Message } from "node-telegram-bot-api";
+import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+
 const chinesePrompt = "Traduza os textos de entrada do usuário para português, baseado no contexto anterior. Sua resposta deve conter apenas o texto traduzido.";
 const portuguesePrompt = "基于之前的内容，把用户输入的文本翻译成中文";
 
 const maxMessages = 4;
 
-const { openai } = require("./openai.js");
-const { isChinese } = require("./utils.js");
+import { openai } from "./openai";
+import { isChinese } from "./utils";
 
-async function translateReply(msg){
+export async function translateReply(msg: Message): Promise<string> {
 
-    const isChineseText = await isChinese(msg.text);
+    console.log(`Translating message: ${msg.text}`);
+
+    const isChineseText = isChinese(msg.text);
     
-    var messages = [
+    let messages: ChatCompletionMessageParam[] = [
         {
             role: "system",
             content: isChineseText ? chinesePrompt : portuguesePrompt
         }
     ]
 
-    var current = msg;
+    let current = msg;
 
     while(current && messages.length < maxMessages){
         if(current.text){
@@ -41,7 +46,3 @@ async function translateReply(msg){
     return reply;
 
 }
-
-module.exports = {
-    translateReply
-};
