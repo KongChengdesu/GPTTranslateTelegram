@@ -9,7 +9,7 @@ import { Message } from 'node-telegram-bot-api';
 import { ChatCompletionMessageParam } from 'openai/resources';
 import { openai } from './openai';
 
-const speechConfig = sdk.SpeechConfig.fromSubscription(process.env.AZURE_SPEECH_KEY, process.env.AZURE_REGION);
+const speechConfig = sdk.SpeechConfig.fromSubscription(process.env.AZURE_SPEECH_KEY, process.env.AZURE_SPEECH_REGION);
 speechConfig.speechRecognitionLanguage = process.env.AZURE_SPEECH_LANGUAGE || 'pt-BR';
 
 const audioPrompt = "把下列信息翻译成中文，这些信息是根据语音识别得来的，可能会有错误，请纠正这些错误";
@@ -32,19 +32,14 @@ async function speechToText(audioFilePath: string): Promise<string> {
     
 }
 
-export async function handleReceivedAudio(msg: Message, fileUrl: string): Promise<string> {
-
-    if(!msg.voice) {
-        return;
-    }
-
+export async function handleReceivedAudio(msg: Message, fileUrl: string): Promise<string> 
+{
     const audioDownload = await axios.get(fileUrl, { responseType: 'arraybuffer' });
 
     const audioBuffer = Buffer.from(audioDownload.data, 'binary');
-    const audioFilePath = path.join(__dirname, 'audio.ogg');
+    const audioFilePath = path.join(__dirname,"..","download", 'audio.wav');
     fs.writeFileSync(audioFilePath, audioBuffer);
     const text = await speechToText(audioFilePath);
-
     fs.unlinkSync(audioFilePath);
 
     let messages: ChatCompletionMessageParam[] = [
